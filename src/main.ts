@@ -12,6 +12,7 @@ async function bootstrap() {
     .setDescription('Estoque de vegetal')
     .setVersion('1.0')
     .addTag('estoque')
+    .addBearerAuth()
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('swagger', app, documentFactory);

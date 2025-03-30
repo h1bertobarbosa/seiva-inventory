@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { SignupService } from './signup.service';
 import { SignupController } from './signup.controller';
 import { RegisterUser } from './register-user';
 import { LibsModule } from '../libs/libs.module';
@@ -19,7 +18,6 @@ import { User, UserSchema } from '../database/schemas/user.schema';
   ],
   controllers: [SignupController],
   providers: [
-    SignupService,
     RegisterUser,
     { provide: SignupRepository, useClass: MongooseSignupRepository },
   ],

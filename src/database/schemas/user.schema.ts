@@ -1,8 +1,12 @@
+import { ac } from '@faker-js/faker/dist/airline-CBNP41sR';
 import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Document, Types } from 'mongoose';
 
 @Schema({ timestamps: true })
 export class User extends Document {
+  @Prop({ required: true, type: Types.ObjectId })
+  accountId: Types.ObjectId;
+
   @Prop({ required: true })
   name: string;
 
@@ -13,4 +17,6 @@ export class User extends Document {
   password: string;
 }
 
-export const UserSchema = SchemaFactory.createForClass(User);
+export const UserSchema = SchemaFactory.createForClass(User).index({
+  accountId: 1,
+});
