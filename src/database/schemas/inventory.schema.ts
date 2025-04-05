@@ -10,13 +10,13 @@ export class InventoryHistory extends Document {
   obs: string;
 
   @Prop()
-  outputDate: Date;
+  inputDate: Date;
 }
 export const BodySchema = SchemaFactory.createForClass(InventoryHistory);
 export interface InventoryHistoryModel {
   quantity: number;
   obs: string;
-  outputDate: Date;
+  inputDate: Date;
 }
 @Schema({ timestamps: true })
 export class Inventory extends Document {

@@ -1,16 +1,6 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-  Put,
-} from '@nestjs/common';
+import { Controller, Post, Body, Patch, Param } from '@nestjs/common';
 import { InventoryService } from './inventory.service';
 import { CreateInventoryDto } from './dto/create-inventory.dto';
-import { UpdateInventoryDto } from './dto/update-inventory.dto';
 import {
   ApiBearerAuth,
   ApiCreatedResponse,
@@ -39,7 +29,7 @@ export class InventoryController {
     });
   }
 
-  @Put(':id/output')
+  @Patch(':id/output')
   @ApiOkResponse({ type: CreateOutputInventoryDto })
   async output(
     @Body() createInventoryDto: CreateOutputInventoryDto,
@@ -53,13 +43,17 @@ export class InventoryController {
     });
   }
 
-  @Get()
-  findAll() {
-    return this.inventoryService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.inventoryService.findOne(+id);
+  @Patch(':id/input')
+  @ApiOkResponse({ type: CreateOutputInventoryDto })
+  async input(
+    @Body() createInventoryDto: CreateOutputInventoryDto,
+    @User() user: UserSession,
+    @Param('id') inventoryId: string,
+  ) {
+    return this.inventoryService.input({
+      ...createInventoryDto,
+      accountId: user.accountId,
+      inventoryId,
+    });
   }
 }

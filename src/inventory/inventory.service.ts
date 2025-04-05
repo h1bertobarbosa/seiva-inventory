@@ -1,64 +1,54 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateInventoryDto } from './dto/create-inventory.dto';
 import { UpdateInventoryDto } from './dto/update-inventory.dto';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
 import { OutputInventoryDto } from './dto/output-inventory.dto';
 import { CreateOutputInventoryDto } from './dto/create-output-inventory.dto';
-import { Inventory } from '../database/schemas/inventory.schema';
+import { InventoryEntity } from './entities/inventory.entity';
+import { InventoryRepository } from './entities/inventory-repository';
 
 @Injectable()
 export class InventoryService {
   constructor(
-    @InjectModel(Inventory.name)
-    private readonly inventoryModel: Model<Inventory>,
+    @Inject(InventoryRepository)
+    private readonly inventoryRepository: InventoryRepository,
   ) {}
 
   async create(
     createInventoryDto: CreateInventoryDto,
   ): Promise<OutputInventoryDto> {
-    const createdInventory =
-      await this.inventoryModel.create(createInventoryDto);
-    return OutputInventoryDto.fromInventory(createdInventory);
+    const inventory = await this.inventoryRepository.save(
+      InventoryEntity.createFromDto(createInventoryDto),
+    );
+    return OutputInventoryDto.fromInventory(inventory.getValue());
   }
 
   async output(input: CreateOutputInventoryDto) {
-    const inventory = await this.inventoryModel
-      .findById(input.inventoryId)
-      .exec();
-    if (!inventory) {
-      throw new NotFoundException('Inventory not found');
-    }
+    const inventory = await this.inventoryRepository.findById(
+      input.inventoryId,
+    );
 
-    inventory.quantity -= input.quantity;
-    const history = {
-      quantity: -input.quantity,
-      outputDate: input.outputDate || new Date(),
-      obs: input.obs,
-    };
-    if (!Array.isArray(inventory.history)) {
-      inventory.history = [history];
-    } else {
-      inventory.history.push(history);
-    }
-    inventory.markModified('history');
-    await inventory.save();
+    inventory.removeStock(
+      input.quantity,
+      input.outputDate || new Date(),
+      input.obs,
+    );
+
+    await this.inventoryRepository.save(inventory);
     return OutputInventoryDto.fromInventory(inventory);
   }
 
-  findAll() {
-    return `This action returns all inventory`;
-  }
+  async input(input: CreateOutputInventoryDto) {
+    const inventory = await this.inventoryRepository.findById(
+      input.inventoryId,
+    );
 
-  findOne(id: number) {
-    return `This action returns a #${id} inventory`;
-  }
+    inventory.addStock(
+      input.quantity,
+      input.outputDate || new Date(),
+      input.obs,
+    );
 
-  update(id: number, updateInventoryDto: UpdateInventoryDto) {
-    return `This action updates a #${id} inventory`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} inventory`;
+    await this.inventoryRepository.save(inventory);
+    return OutputInventoryDto.fromInventory(inventory);
   }
 }

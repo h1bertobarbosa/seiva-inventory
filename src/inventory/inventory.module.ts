@@ -2,8 +2,12 @@ import { Module } from '@nestjs/common';
 import { InventoryService } from './inventory.service';
 import { InventoryController } from './inventory.controller';
 import { MongooseModule } from '@nestjs/mongoose';
-import { Inventory } from './entities/inventory.entity';
-import { InventorySchema } from '../database/schemas/inventory.schema';
+import {
+  Inventory,
+  InventorySchema,
+} from '../database/schemas/inventory.schema';
+import { InventoryRepository } from './entities/inventory-repository';
+import { MongooseInventoryRepository } from '../database/repositories/mongoose-inventory-repository';
 
 @Module({
   imports: [
@@ -12,6 +16,12 @@ import { InventorySchema } from '../database/schemas/inventory.schema';
     ]),
   ],
   controllers: [InventoryController],
-  providers: [InventoryService],
+  providers: [
+    InventoryService,
+    {
+      provide: InventoryRepository,
+      useClass: MongooseInventoryRepository,
+    },
+  ],
 })
 export class InventoryModule {}
