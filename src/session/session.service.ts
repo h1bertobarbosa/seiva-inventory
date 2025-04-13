@@ -17,47 +17,88 @@ export class SessionService {
     @Inject(SessionRepository)
     private readonly sessionRepository: SessionRepository,
   ) {}
+
   async execute(createSessionDto: CreateSessionDto) {
-    const inventories = await Promise.all(
+    const inventories = await this.fetchInventories(createSessionDto);
+    this.validateInventoryOwnership(inventories, createSessionDto.accountId);
+
+    const stockUsed = this.mapInventoriesToStockUsed(inventories);
+    const session = this.createSessionEntity(createSessionDto, stockUsed);
+
+    this.updateInventoryStocks(inventories, createSessionDto, session);
+    const leftOver = this.createLeftOverInventory(createSessionDto, session);
+    inventories.push(leftOver);
+
+    const result = await this.saveSessionAndInventories(session, inventories);
+
+    return this.formatResponse(session, result);
+  }
+
+  private async fetchInventories(createSessionDto: CreateSessionDto) {
+    return Promise.all(
       createSessionDto.inventoryUsed.map(async (inventory) => {
         return this.inventoryRepository.findById(inventory.id);
       }),
     );
+  }
+
+  private validateInventoryOwnership(
+    inventories: InventoryEntity[],
+    accountId: string,
+  ) {
     if (
-      inventories.some(
-        (inventory) => inventory.getAccountId() !== createSessionDto.accountId,
-      )
+      inventories.some((inventory) => inventory.getAccountId() !== accountId)
     ) {
       throw new UnprocessableEntityException(
         'One or more inventories do not belong to the specified account.',
       );
     }
+  }
 
-    const stockUsed = inventories.map((inventory) => {
-      return {
-        id: inventory.getId(),
-        description: inventory.getDescription(),
-        quantity: inventory.getQuantity(),
-      };
-    });
+  private mapInventoriesToStockUsed(inventories: InventoryEntity[]) {
+    return inventories.map((inventory) => ({
+      id: inventory.getId(),
+      description: inventory.getDescription(),
+      quantity: inventory.getQuantity(),
+    }));
+  }
+
+  private createSessionEntity(
+    createSessionDto: CreateSessionDto,
+    stockUsed: any[],
+  ) {
     const session = SessionEntity.create({
       ...createSessionDto,
       stockUsed,
       sessionDate: new Date(createSessionDto.sessionDate),
     });
     session.calculateUsedQuantity();
-    createSessionDto.inventoryUsed.forEach((inventory) => {
-      inventories.forEach((inv) => {
-        if (inv.getId() === inventory.id) {
-          inv.removeStock(
-            inventory.quantity,
+    return session;
+  }
+
+  private updateInventoryStocks(
+    inventories: InventoryEntity[],
+    createSessionDto: CreateSessionDto,
+    session: SessionEntity,
+  ) {
+    createSessionDto.inventoryUsed.forEach((inventoryUsed) => {
+      inventories.forEach((inventory) => {
+        if (inventory.getId() === inventoryUsed.id) {
+          inventory.removeStock(
+            inventoryUsed.quantity,
             new Date(),
             session.getDescription(),
           );
         }
       });
     });
-    const leftOver = InventoryEntity.createFromDto({
+  }
+
+  private createLeftOverInventory(
+    createSessionDto: CreateSessionDto,
+    session: SessionEntity,
+  ) {
+    return InventoryEntity.createFromDto({
       accountId: createSessionDto.accountId,
       description: `Saldo - ${session.getDescription()}`,
       input_type: 'Saldo',
@@ -68,14 +109,22 @@ export class SessionService {
       preparation_date: new Date(),
       tankage: '',
     });
-    inventories.push(leftOver);
+  }
 
+  private async saveSessionAndInventories(
+    session: SessionEntity,
+    inventories: InventoryEntity[],
+  ) {
     const [savedSession] = await Promise.all([
       this.sessionRepository.save(session),
       ...inventories.map((inventory) =>
         this.inventoryRepository.save(inventory),
       ),
     ]);
+    return savedSession;
+  }
+
+  private formatResponse(session: SessionEntity, savedSession: SessionEntity) {
     return {
       sessionId: savedSession.getId(),
       description: session.getDescription(),
