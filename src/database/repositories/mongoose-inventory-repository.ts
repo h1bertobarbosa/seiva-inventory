@@ -10,6 +10,7 @@ export class MongooseInventoryRepository implements InventoryRepository {
     @InjectModel(Inventory.name)
     private readonly inventoryModel: Model<Inventory>,
   ) {}
+
   async save(inventory: InventoryEntity): Promise<InventoryEntity> {
     const { id, ...rest } = inventory.getValue();
 

@@ -80,8 +80,23 @@ export class InventoryEntity {
         });
       }),
       inventory.accountId,
-      inventory._id,
+      String(inventory._id),
     );
+  }
+
+  getAccountId(): string {
+    return this.accountId;
+  }
+
+  getId(): string {
+    return this.id;
+  }
+
+  getQuantity(): number {
+    return this.quantity.getValue();
+  }
+  getDescription() {
+    return this.description;
   }
 
   getValue() {
