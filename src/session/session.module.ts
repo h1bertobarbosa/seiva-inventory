@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { SessionService } from './session.service';
 import { SessionController } from './session.controller';
 import { InventoryRepository } from '../inventory/entities/inventory-repository';
 import { MongooseInventoryRepository } from '../database/repositories/mongoose-inventory-repository';
@@ -11,6 +10,8 @@ import {
   InventorySchema,
 } from '../database/schemas/inventory.schema';
 import { Session, SessionSchema } from '../database/schemas/session.schema';
+import { CreateSession } from './create-session.usecase';
+import { SessionService } from './session.service';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { Session, SessionSchema } from '../database/schemas/session.schema';
   ],
   controllers: [SessionController],
   providers: [
+    CreateSession,
     SessionService,
     { provide: InventoryRepository, useClass: MongooseInventoryRepository },
     { provide: SessionRepository, useClass: MongooseSessionRepository },

@@ -1,14 +1,14 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { SessionService } from './session.service';
 import { InventoryRepository } from '../inventory/entities/inventory-repository';
 import { SessionRepository } from './entities/session.repository';
 import { CreateSessionDto } from './dto/create-session.dto';
 import { UnprocessableEntityException } from '@nestjs/common';
 import { InventoryEntity } from '../inventory/entities/inventory.entity';
 import { SessionEntity } from './entities/session.entity';
+import { CreateSession } from './create-session.usecase';
 
-describe('SessionService', () => {
-  let service: SessionService;
+describe('CreateSession UseCase', () => {
+  let service: CreateSession;
   let inventoryRepository: jest.Mocked<InventoryRepository>;
   let sessionRepository: jest.Mocked<SessionRepository>;
 
@@ -24,7 +24,7 @@ describe('SessionService', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        SessionService,
+        CreateSession,
         {
           provide: InventoryRepository,
           useValue: mockInventoryRepository,
@@ -36,7 +36,7 @@ describe('SessionService', () => {
       ],
     }).compile();
 
-    service = module.get<SessionService>(SessionService);
+    service = module.get<CreateSession>(CreateSession);
     inventoryRepository = module.get(InventoryRepository);
     sessionRepository = module.get(SessionRepository);
   });
