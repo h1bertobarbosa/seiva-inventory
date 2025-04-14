@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { SessionEntity } from './entities/session.entity';
 import { Model } from 'mongoose';
 import { ListSessionDto } from './dto/list-session.dto';
 import { Session, SessionModel } from '../database/schemas/session.schema';

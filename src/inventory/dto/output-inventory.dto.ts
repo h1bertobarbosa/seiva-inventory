@@ -34,7 +34,7 @@ export class OutputInventoryDto {
       inputType: inventory.input_type,
       obs: inventory.obs,
       preparationDate: inventory.preparation_date,
-      quantity: inventory.quantity,
+      quantity: inventory.quantity / 1000,
       createdAt: inventory.createdAt,
       updatedAt: inventory.updatedAt,
     };

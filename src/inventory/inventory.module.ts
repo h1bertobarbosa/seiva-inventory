@@ -8,6 +8,7 @@ import {
 } from '../database/schemas/inventory.schema';
 import { InventoryRepository } from './entities/inventory-repository';
 import { MongooseInventoryRepository } from '../database/repositories/mongoose-inventory-repository';
+import { InventoryListService } from './inventory-list.service';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { MongooseInventoryRepository } from '../database/repositories/mongoose-i
   controllers: [InventoryController],
   providers: [
     InventoryService,
+    InventoryListService,
     {
       provide: InventoryRepository,
       useClass: MongooseInventoryRepository,

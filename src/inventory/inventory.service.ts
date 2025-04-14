@@ -1,6 +1,5 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { CreateInventoryDto } from './dto/create-inventory.dto';
-import { UpdateInventoryDto } from './dto/update-inventory.dto';
 import { OutputInventoryDto } from './dto/output-inventory.dto';
 import { CreateOutputInventoryDto } from './dto/create-output-inventory.dto';
 import { InventoryEntity } from './entities/inventory.entity';
