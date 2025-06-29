@@ -11,6 +11,10 @@ export class MongooseInventoryRepository implements InventoryRepository {
     private readonly inventoryModel: Model<Inventory>,
   ) {}
 
+  async delete(id: string): Promise<void> {
+    await this.inventoryModel.deleteOne({ _id: id }).exec();
+  }
+
   async save(inventory: InventoryEntity): Promise<InventoryEntity> {
     const { id, ...rest } = inventory.getValue();
 

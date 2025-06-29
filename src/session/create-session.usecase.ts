@@ -21,19 +21,15 @@ export class CreateSession {
   async execute(createSessionDto: CreateSessionDto) {
     const inventories = await this.fetchInventories(createSessionDto);
     this.validateInventoryOwnership(inventories, createSessionDto.accountId);
-
     const stockUsed = this.mapInventoriesToStockUsed(
       inventories,
       createSessionDto,
     );
     const session = this.createSessionEntity(createSessionDto, stockUsed);
-
     this.updateInventoryStocks(inventories, createSessionDto, session);
     const leftOver = this.createLeftOverInventory(createSessionDto, session);
     inventories.push(leftOver);
-
     const result = await this.saveSessionAndInventories(session, inventories);
-
     return this.formatResponse(session, result);
   }
 
@@ -129,12 +125,20 @@ export class CreateSession {
     session: SessionEntity,
     inventories: InventoryEntity[],
   ) {
-    const [savedSession] = await Promise.all([
-      this.sessionRepository.save(session),
+    const savedInventories = await Promise.all([
       ...inventories.map((inventory) =>
         this.inventoryRepository.save(inventory),
       ),
     ]);
+    const stockLeft = savedInventories.find(
+      (inventory) => inventory.getInputType() === 'Saldo',
+    );
+    session.setStockLeft({
+      id: stockLeft.getId(),
+      quantity: stockLeft.getQuantityInLiters(),
+      description: stockLeft.getDescription(),
+    });
+    const savedSession = await this.sessionRepository.save(session);
     return savedSession;
   }
 

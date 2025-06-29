@@ -26,7 +26,7 @@ export class OutputInventoryDto {
 
   static fromInventory(inventory: any) {
     return {
-      id: inventory.id,
+      id: inventory.id ?? inventory._id,
       description: inventory.description,
       tankage: inventory.tankage,
       origin: inventory.origin,

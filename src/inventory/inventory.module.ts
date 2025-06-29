@@ -9,12 +9,14 @@ import {
 import { InventoryRepository } from './entities/inventory-repository';
 import { MongooseInventoryRepository } from '../database/repositories/mongoose-inventory-repository';
 import { InventoryListService } from './inventory-list.service';
+import { LibsModule } from '../libs/libs.module';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
       { name: Inventory.name, schema: InventorySchema },
     ]),
+    LibsModule,
   ],
   controllers: [InventoryController],
   providers: [

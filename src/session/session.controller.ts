@@ -1,4 +1,14 @@
-import { Controller, Post, Get, Body, Query } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Get,
+  Body,
+  Query,
+  Delete,
+  Param,
+  HttpCode,
+  HttpStatus,
+} from '@nestjs/common';
 import { CreateSession } from './create-session.usecase';
 import { CreateSessionDto } from './dto/create-session.dto';
 import { ListSessionDto } from './dto/list-session.dto';
@@ -35,5 +45,12 @@ export class SessionController {
     @Query() queryParams: ListSessionDto,
   ) {
     return this.sessionService.findAll(user.accountId, queryParams);
+  }
+
+  @Delete(':id')
+  @ApiOperation({ summary: 'Delete session by ID' })
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async delete(@Param('id') sessionId: string, @User() user: UserSession) {
+    await this.sessionService.deleteSessionById(user.accountId, sessionId);
   }
 }

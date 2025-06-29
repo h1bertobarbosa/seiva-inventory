@@ -21,6 +21,7 @@ interface InputParam {
   quantityLeft: number;
   cupsQuantity?: number;
   quantityUsed?: number;
+  stockLeft?: StockUsedParams;
 }
 
 export class SessionEntity {
@@ -38,6 +39,7 @@ export class SessionEntity {
     private quantityLeft: InventoryQuantity,
     private cupsQuantity: number,
     private quantityUsed: number,
+    private stockLeft?: StockUsed,
   ) {
     if (this.stockUsed.length === 0) {
       throw new UnprocessableEntityException('StockUsed cannot be empty');
@@ -46,6 +48,9 @@ export class SessionEntity {
 
   static create(params: InputParam): SessionEntity {
     const stockUsed = params.stockUsed.map((stock) => StockUsed.create(stock));
+    const stockLeft = params?.stockLeft
+      ? StockUsed.create(params.stockLeft)
+      : undefined;
     const sessionDate = new Date(params.sessionDate);
     return new SessionEntity(
       params?.id || '',
@@ -61,7 +66,12 @@ export class SessionEntity {
       InventoryQuantity.create(params.quantityLeft),
       params?.cupsQuantity || 0,
       params?.quantityUsed || 0,
+      stockLeft,
     );
+  }
+
+  setStockLeft(stockLeft: StockUsedParams): void {
+    this.stockLeft = StockUsed.create(stockLeft);
   }
 
   calculateUsedQuantity(): number {
@@ -121,5 +131,9 @@ export class SessionEntity {
 
   getQuantityUsed(): number {
     return this.quantityUsed;
+  }
+
+  getStockLeft(): StockUsed | undefined {
+    return this.stockLeft;
   }
 }

@@ -14,7 +14,7 @@ export class StockUsed {
     return new StockUsed(
       param.id,
       param.description,
-      InventoryQuantity.create(param.quantity),
+      InventoryQuantity.create(Number(param.quantity)),
     );
   }
 

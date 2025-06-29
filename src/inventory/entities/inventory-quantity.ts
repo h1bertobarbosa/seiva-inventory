@@ -7,7 +7,7 @@ export class InventoryQuantity {
     return new InventoryQuantity(liters);
   }
   getValue(): number {
-    return this.militers;
+    return Number(this.militers);
   }
   subtract(quantity: InventoryQuantity): InventoryQuantity {
     return InventoryQuantity.create(

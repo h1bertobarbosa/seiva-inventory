@@ -12,6 +12,7 @@ import {
 import { Session, SessionSchema } from '../database/schemas/session.schema';
 import { CreateSession } from './create-session.usecase';
 import { SessionService } from './session.service';
+import { LibsModule } from '../libs/libs.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { SessionService } from './session.service';
       { name: Inventory.name, schema: InventorySchema },
       { name: Session.name, schema: SessionSchema },
     ]),
+    LibsModule,
   ],
   controllers: [SessionController],
   providers: [

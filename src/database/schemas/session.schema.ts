@@ -33,10 +33,10 @@ export class Session extends Document {
   @Prop({ required: true })
   masterSupport: string;
 
-  @Prop({ required: true })
+  @Prop()
   explanation: string;
 
-  @Prop({ required: true })
+  @Prop()
   documentReader: string;
 
   @Prop({ required: true, type: Date })
@@ -48,6 +48,11 @@ export class Session extends Document {
     validate: [(val: any[]) => val.length > 0, 'Stock used cannot be empty'],
   })
   stockUsed: StockUsed[];
+
+  @Prop({
+    type: StockUsedSchema,
+  })
+  stockLeft: StockUsed;
 
   @Prop({ required: true })
   quantityLeft: number;
@@ -80,6 +85,7 @@ export interface SessionModel extends Document {
   documentReader: string;
   sessionDate: Date;
   stockUsed: StockUsedModel[];
+  stockLeft: StockUsedModel;
   quantityLeft: number;
   cupsQuantity: number;
   quantityUsed: number;

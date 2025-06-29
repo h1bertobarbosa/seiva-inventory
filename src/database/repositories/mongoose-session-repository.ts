@@ -14,19 +14,15 @@ export class MongooseSessionRepository implements SessionRepository {
     const sessionData = this.mapSessionEntityToModel(session);
     const { id, ...sessionDetails } = sessionData;
 
-    let savedSession;
-
     if (id) {
-      savedSession = await this.sessionModel.findOneAndUpdate(
+      const savedSession = await this.sessionModel.findOneAndUpdate(
         { _id: id },
         { $set: sessionDetails },
-        { new: true }, // Return the updated document
+        { new: true },
       );
-    } else {
-      savedSession = await this.sessionModel.create(sessionDetails);
+      return this.mapModelToSessionEntity(savedSession);
     }
-
-    // Map the saved document back to a SessionEntity
+    const savedSession = await this.sessionModel.create(sessionDetails);
     return this.mapModelToSessionEntity(savedSession);
   }
 
@@ -49,6 +45,11 @@ export class MongooseSessionRepository implements SessionRepository {
       explanation: session.getExplanation(),
       documentReader: session.getDocumentReader(),
       sessionDate: session.getSessionDate(),
+      stockLeft: {
+        id: session.getStockLeft().getId(),
+        description: session.getStockLeft().getDescription(),
+        quantity: session.getStockLeft().getQuantity(),
+      },
     };
   }
 
@@ -71,6 +72,11 @@ export class MongooseSessionRepository implements SessionRepository {
       quantityLeft: session.quantityLeft,
       cupsQuantity: session.cupsQuantity,
       quantityUsed: session.quantityUsed,
+      stockLeft: {
+        id: session.stockLeft.id.toString(),
+        description: session.stockLeft.description,
+        quantity: session.stockLeft.quantity,
+      },
     });
   }
 }

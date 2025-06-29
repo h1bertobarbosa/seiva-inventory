@@ -67,10 +67,10 @@ export class InventoryEntity {
       inventory.description,
       inventory.tankage,
       inventory.origin,
-      inventory.master_preparation,
-      inventory.input_type,
+      inventory.masterPreparation,
+      inventory.inputType,
       inventory.obs,
-      inventory.preparation_date,
+      inventory.preparationDate,
       InventoryQuantity.create(inventory.quantity / 1000),
       inventory.history.map((history: any) => {
         return InventoryHistory.createFromData({
@@ -97,6 +97,12 @@ export class InventoryEntity {
   }
   getDescription() {
     return this.description;
+  }
+  getInputType() {
+    return this.inputType;
+  }
+  getQuantityInLiters(): number {
+    return this.quantity.getValue() / 1000;
   }
 
   getValue() {

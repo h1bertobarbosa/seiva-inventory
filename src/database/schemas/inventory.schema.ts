@@ -1,5 +1,5 @@
 import { Types } from 'mongoose';
-import { Schema, Prop, SchemaFactory, raw } from '@nestjs/mongoose';
+import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 @Schema({ timestamps: true })
 export class InventoryHistory extends Document {
@@ -29,13 +29,13 @@ export class Inventory extends Document {
   @Prop()
   origin: string;
   @Prop()
-  master_preparation: string;
+  masterPreparation: string;
   @Prop()
-  input_type: string;
+  inputType: string;
   @Prop()
   obs: string;
   @Prop()
-  preparation_date: Date;
+  preparationDate: Date;
   @Prop()
   quantity: number;
   @Prop({ type: [BodySchema], default: [] })
