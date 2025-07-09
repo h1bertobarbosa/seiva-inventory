@@ -7,6 +7,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { SigninModule } from './signin/signin.module';
 import { InventoryModule } from './inventory/inventory.module';
 import { SessionModule } from './session/session.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { SessionModule } from './session/session.module';
     SigninModule,
     InventoryModule,
     SessionModule,
+    UsersModule,
   ],
   controllers: [AppController],
   providers: [AppService],

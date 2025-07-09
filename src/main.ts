@@ -6,6 +6,9 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.enableCors({
     origin: '*',
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    preflightContinue: false,
+    optionsSuccessStatus: 200,
   });
   const config = new DocumentBuilder()
     .setTitle('Estoque')

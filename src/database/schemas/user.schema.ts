@@ -1,4 +1,3 @@
-import { ac } from '@faker-js/faker/dist/airline-CBNP41sR';
 import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
 
